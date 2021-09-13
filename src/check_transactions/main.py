@@ -40,7 +40,7 @@ epoch_time=dict()
 
 BASE_PATH="/tmp/"
 block_file='handled_blocks.csv'
-init_block=eth.get_block_number_by_timestamp(timestamp=1630832400, closest="before")
+init_block=eth.get_block_number_by_timestamp(timestamp=1631543400, closest="before")
 
 def download_blob(bucket_name, source_blob_name, destination_file_name):
     """Downloads a blob from the bucket."""
