@@ -33,7 +33,6 @@ function validated_address(){
         const address = web3.utils.toChecksumAddress(document.getElementById("add").value)
         result=web3.utils.isAddress(address)
         if(result){
-            console.log("verfied address")
             document.getElementById("add").style.color='green'
         }
         else{
@@ -216,8 +215,6 @@ function check_image(e) {
                         counter=counter+1
                     }
                     // Show resized image in preview element
-                    console.log(tile_size,canvas.width,canvas.height)
-                    console.log(img.width,img.height)
                     var dataurl = canvas.toDataURL(imageFile.type);
                     document.getElementById("tile_img").src = dataurl;
                     document.getElementById("tile_img").style.left=String(epoch_px[0][0]+"px");
@@ -337,7 +334,6 @@ async function init(){
             else if (end_epoch - new Date().getTime() < 0){
             //current epoch has already ended
                 next_epoch=1+data_obj["epoch"]
-                console.log(next_epoch)
                 delta_ms=Math.abs(data_obj["epoch_"+next_epoch]["time"]["start_epoch"] - new Date().getTime())
                 delta_h=Math.round(delta_ms/1000/60/60)
                 document.getElementById("vote_creation").innerHTML = "Voting for next period will open in: ~"+delta_h+" hours"

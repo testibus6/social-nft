@@ -1,0 +1,9 @@
+iac/.terraform
+iac/create-nft.json
+iac/.auto.tfvars
+**/.firebase
+*.firebaserc
+/generated
+*.lock
+*/terraform.*
+*/.terraform.*
