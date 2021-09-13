@@ -1,0 +1,54 @@
+{
+  "hosting": {
+    "public": "firebase_public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "redirects":[
+      {
+        "source": "/handle_vote",
+        "destination": "https://us-central1-create-nft.cloudfunctions.net/handle_vote",
+        "type":302
+        },
+      {
+      "source": "/nft_temp.png",
+      "destination": "https://storage.googleapis.com/app_src/nft_temp.png",
+      "type":302
+          },
+      { 
+      "source": "/lead_vote.json",
+      "destination": "https://storage.googleapis.com/app_src/lead_vote.json",
+      "type":302
+      },
+      { 
+        "source": "/main.js",
+        "destination": "https://storage.googleapis.com/app_src/main.js",
+        "type":302
+      },
+      { 
+        "source": "/main.css",
+        "destination": "https://storage.googleapis.com/app_src/main.css",
+        "type":302
+        },
+      { 
+        "source": "/epochs.png",
+        "destination": "https://storage.googleapis.com/app_src/epochs.png",
+        "type":302
+        },
+
+      {
+      "source": "/epoch.json",
+      "destination": "https://storage.googleapis.com/app_src/epoch.json",
+      "type":302
+          }
+    ]
+  }
+}
