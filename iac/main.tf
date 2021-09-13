@@ -190,6 +190,9 @@ resource "google_storage_bucket_object" "nft_temp_img" {
    object = google_storage_bucket_object.app_js.output_name
    role   = "READER"
    entity = "allUsers"
+   depends_on = [
+    google_storage_bucket_object.app_js
+  ]
  }
 
 # resource "google_storage_object_access_control" "public_rule_index" {
