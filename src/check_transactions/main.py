@@ -14,7 +14,8 @@ import json
 import sys
 from google.api_core.exceptions import Conflict
 #from web3.types import Timestamp
-eth = Etherscan(os.getenv('ETHERSCAN-API-KEY'),net='kovan')
+#eth = Etherscan(os.getenv('ETHERSCAN-API-KEY'),net='kovan')
+eth = Etherscan(os.getenv('ETHERSCAN-API-KEY'))
 
 #timeslots for voting
 #timeslots for transactions
@@ -40,7 +41,7 @@ epoch_time=dict()
 
 BASE_PATH="/tmp/"
 block_file='handled_blocks.csv'
-init_block=eth.get_block_number_by_timestamp(timestamp=1631543400, closest="before")
+init_block=eth.get_block_number_by_timestamp(timestamp=1631541640, closest="before")
 
 def download_blob(bucket_name, source_blob_name, destination_file_name):
     """Downloads a blob from the bucket."""
