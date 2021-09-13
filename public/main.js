@@ -328,7 +328,13 @@ async function init(){
             //current epoch has not started yet
                 delta_ms=data_obj["epoch_"+data_obj["epoch"]]["time"]["start_epoch"] - new Date().getTime()
                 delta_h=Math.round(delta_ms/1000/60/60)
-                document.getElementById("vote_creation").innerHTML = "Voting for this period will open in: ~"+delta_h+" hours"
+                if (delta_h<=1){
+                    delta_m=Math.round(delta_ms/1000/60)
+                    document.getElementById("vote_creation").innerHTML = "Voting for this period will open in: ~"+delta_m+" minutes"
+                }
+                else{
+                    document.getElementById("vote_creation").innerHTML = "Voting for this period will open in: ~"+delta_h+" hours"
+                }
                 document.getElementById("countdown").innerHTML = "EXPIRED";
             }
             else if (end_epoch - new Date().getTime() < 0){
@@ -336,7 +342,13 @@ async function init(){
                 next_epoch=1+data_obj["epoch"]
                 delta_ms=Math.abs(data_obj["epoch_"+next_epoch]["time"]["start_epoch"] - new Date().getTime())
                 delta_h=Math.round(delta_ms/1000/60/60)
-                document.getElementById("vote_creation").innerHTML = "Voting for next period will open in: ~"+delta_h+" hours"
+                if (delta_h<=1){
+                    delta_m=Math.round(delta_ms/1000/60)
+                    document.getElementById("vote_creation").innerHTML = "Voting for next period will open in: ~"+delta_m+" minutes"
+                }
+                else{
+                    document.getElementById("vote_creation").innerHTML = "Voting for next period will open in: ~"+delta_h+" hours"
+                }
                 document.getElementById("countdown").innerHTML = "EXPIRED";
             }
             else{
