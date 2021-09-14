@@ -237,6 +237,7 @@ function check_image(e) {
                     tile_img_ob.style.height=String(tile_size+"px");
                     tile_img_ob.style.left=String((epoch_px[0][0]+64)+"px");
                     tile_img_ob.style.top=String((epoch_px[0][1]+185)+"px");
+
                     
                 }
                 img.setAttribute('crossOrigin', '');
