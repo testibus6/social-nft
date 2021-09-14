@@ -21,7 +21,7 @@
 
         @media (max-width: 767.98px) {
             .sidebar {
-                top: 11.5rem;
+                top: 8.5rem;
                 padding: 0;
             }
         }
@@ -52,7 +52,7 @@
 <body onload="init()">
     <nav class="navbar navbar-light bg-light p-3">
         <div class="d-flex col-2 col-sm-1 col-md-2 col-lg-1 mb-2 mb-lg-0 flex-wrap flex-md-nowrap justify-content-between">
-            <button class="navbar-toggler d-md-none collapsed mb-3" type="button" data-toggle="collapse" data-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler d-md-none collapsed mb-3" id="navbar_button" type="button" data-toggle="collapse" data-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
         </div>
@@ -74,7 +74,7 @@
         <div class="row">
             <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
                 <div class="position-sticky">
-                    <ul class="nav flex-column">
+                    <ul class="nav nav-tabs flex-column">
                         <li class="nav-item">
                           <a class="nav-link active" aria-current="page" href="#home" data-toggle="tab">
                             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 1024 1024"><path d="M946.5 505L560.1 118.8l-25.9-25.9a31.5 31.5 0 0 0-44.4 0L77.5 505a63.9 63.9 0 0 0-18.8 46c.4 35.2 29.7 63.3 64.9 63.3h42.5V940h691.8V614.3h43.4c17.1 0 33.2-6.7 45.3-18.8a63.6 63.6 0 0 0 18.7-45.3c0-17-6.7-33.1-18.8-45.2zM568 868H456V664h112v204zm217.9-325.7V868H632V640c0-22.1-17.9-40-40-40H432c-22.1 0-40 17.9-40 40v228H238.1V542.3h-96l370-369.7l23.1 23.1L882 542.3h-96.1z" fill="currentColor"/></svg><span class="ml-2">Home</span>
@@ -113,7 +113,7 @@
                                     <h5 class="card-header">Project description</h5>
                                     <div class="card-body">
                                         <p >Together as a community we will make a community-NFT. The idea is to "bid" for a 64px x 64px Image-NFT together made out of 37 tiles. Each period you have the chance insert your tile into the NFT. To verfiy your bid, it is required to send a transaction to this <a href="https://etherscan.io/address/0x703091392E1BEa715d9F93DaB57DAfA8bB0f45bF" target="_blank">ETH-address</a>  with your specified amount in ETH. At the end of each period, the submitted tile with the biggest amount will be added to the NFT. Once all tiles are bidded, an NFT will be created and auctioned on <a href="https://opensea.io/" target="_blank">opensea.io</a> or a similar plattform. The link will be provided on this website.</p>
-                                        <p >For more details see Rules section.</p>
+                                        <p >For more details see the Rules section.</p>
                                     </div>
                                 </div>                        
                         </div>
@@ -227,10 +227,8 @@
     <script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
     <!-- Github buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <script type="module">
-
-        // Import the functions you need from the SDKs you need
-      
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="module">     
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js";
       
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-analytics.js";
@@ -252,13 +250,17 @@
           measurementId: "G-6THW389TS4"
       
         };    
-      
-        // Initialize Firebase
-      
+            
         const app = initializeApp(firebaseConfig);
       
         const analytics = getAnalytics(app);
-      
+
+        const navLinks = document.querySelectorAll('.nav-item')
+        const menuToggle = document.getElementById("sidebar")
+        const bsCollapse = new bootstrap.Collapse(menuToggle)
+        navLinks.forEach((l) => {
+            l.addEventListener('click', () => {bsCollapse.toggle()})
+        })             
       </script>
 </body>
 </html>

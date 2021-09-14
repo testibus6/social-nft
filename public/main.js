@@ -336,6 +336,7 @@ function on_participate(){
     tile_img_ob.style.left=String((epoch_px[0][0]+64)+"px");
     tile_img_ob.style.top=String((epoch_px[0][1]+185)+"px");
 }
+
 async function init(){
     
     document.getElementById("nft_address").innerHTML=nft_vote_address
@@ -344,6 +345,7 @@ async function init(){
                 method: 'GET'
             }
     ).then(res => res.text()).then(function(data) {
+        
         const data_obj = JSON.parse(data)
         console.log("current epoch: ",data_obj["epoch"])
         if("epoch_"+data_obj["epoch"] in data_obj){
@@ -401,6 +403,7 @@ async function init(){
         document.getElementById("last_update").innerHTML=create_timestamp(data_obj["timestamp"])
         document.getElementById("verfied_votes").innerHTML=data_obj["verfied_votes"]
      })
+    setTimeout( function() { document.getElementById("sidebar").classList.remove("show") }, 500);
 }
 
 function create_timestamp(timestamp){
