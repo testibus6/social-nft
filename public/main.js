@@ -1,11 +1,25 @@
 const nft_vote_address='0x703091392E1BEa715d9F93DaB57DAfA8bB0f45bF'
 var tile_size=0
 var epoch_px=[[0,0],[0,0]]
+
+async function getAccount_init() {
+    if(web3_to_init){
+        on_participate();
+    }
+    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+    const account = accounts[0];
+    console.log(account)
+    document.getElementById("add").value = account;
+    document.getElementById("display_eth_address").innerHTML=String(account);
+}
+
+
 async function getAccount() {
     const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
     const account = accounts[0];
     console.log(account)
     document.getElementById("add").value = account;
+    document.getElementById("display_eth_address").innerHTML=account;
     validated_address()
 }
 
@@ -74,7 +88,7 @@ async function submitVote() {
                 if(response=="okay"){
                     document.getElementById("transaction_details").style.display="block"
                     document.getElementById("sendTransaction").style.display="block"
-                    document.getElementById("vote_result").innerHTML="Your vote was successfully registered. Please send the following transaction to validate your vote:"
+                    document.getElementById("vote_result").innerHTML="Your vote was registered. Please send the following transaction:"
                     document.getElementById("from_add").innerHTML="From: "+data["address"]
                     document.getElementById("to_add").innerHTML="To: "+nft_vote_address
                     document.getElementById("vote_amount").innerHTML="Amount [ETH]: "+data["amount"]
@@ -128,11 +142,11 @@ function indicate_epoch(epoch){
     ctx.putImageData(imgData,0,0);
 
     //ctx.fillText("EP"+String(epoch), 1, 1);
-    document.getElementById("tile_img").src =canvas.toDataURL();
-    document.getElementById("tile_img").style.left=String(epoch_px[0][0]+"px");
-    document.getElementById("tile_img").style.top=String(epoch_px[0][1]+"px");
-    //document.getElementById("tile_img").style.width=String(tile_size*2+"px");
-
+    tile_img_ob=document.getElementById("tile_img")
+    tile_img_ob.src =canvas.toDataURL();
+    tile_img_ob.style.height=String(tile_size+"px");
+    tile_img_ob.style.left=String((epoch_px[0][0]+64)+"px");
+    tile_img_ob.style.top=String((epoch_px[0][1]+185)+"px");
 }
 function onchange_px_value(){
     pos=0
@@ -160,10 +174,11 @@ function onchange_px_value(){
     }
     // put the modified pixels back on the canvas
     ctx.putImageData(imgData,0,0);
-
-    document.getElementById("tile_img").src =canvas.toDataURL();
-    document.getElementById("tile_img").style.left=String(epoch_px[0][0]+"px");
-    document.getElementById("tile_img").style.top=String(epoch_px[0][1]+"px");
+    tile_img_ob=document.getElementById("tile_img")
+    tile_img_ob.src =canvas.toDataURL();
+    tile_img_ob.style.width=String(tile_size+"px");
+    tile_img_ob.style.left=String((epoch_px[0][0]+64)+"px");
+    tile_img_ob.style.top=String((epoch_px[0][1]+185)+"px");
 }
 function rgbToHex(r, g, b) {
     return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
@@ -216,11 +231,13 @@ function check_image(e) {
                     }
                     // Show resized image in preview element
                     var dataurl = canvas.toDataURL(imageFile.type);
-                    document.getElementById("tile_img").src = dataurl;
-                    document.getElementById("tile_img").style.left=String(epoch_px[0][0]+"px");
-                    document.getElementById("tile_img").style.top=String(epoch_px[0][1]+"px");
-                    document.getElementById("tile_img").style.width=String(tile_size+"px");
-                    document.getElementById("tile_img").style.height=String(tile_size+"px");
+                    tile_img_ob=document.getElementById("tile_img")
+                    tile_img_ob.src = dataurl;
+                    tile_img_ob.style.width=String(tile_size+"px");
+                    tile_img_ob.style.height=String(tile_size+"px");
+                    tile_img_ob.style.left=String((epoch_px[0][0]+64)+"px");
+                    tile_img_ob.style.top=String((epoch_px[0][1]+185)+"px");
+                    
                 }
                 img.setAttribute('crossOrigin', '');
                 img.src = e.target.result;
@@ -282,32 +299,44 @@ async function change_main_network(){
       }); 
 }
 
-async function init(){
-    if ((typeof window.ethereum !== 'undefined') || (typeof window.web3 !== 'undefined')){
-        web3 = new Web3(web3.currentProvider);
-        web3.eth.net.getNetworkType().then(function(network){
-            if(network!="main"){
-                change_main_network();
-            }
-        }); 
-        window.ethereum.on('chainChanged', function handleChainChanged(_chainId) {
-            // We recommend reloading the page, unless you must do otherwise
-            window.location.reload();
-        });        
-        window.ethereum.on('accountsChanged', function (accounts) {
-            console.log('accountsChanges',accounts);
-            if (accounts.length === 0){console.log('Please connect to MetaMask.');}
-            else{
-                document.getElementById("add").value = accounts[0];
-            }
-          });
-    } else{
-      alert("No Metamask plugin detected. Please install Metamask. Otherwise proceed carefully and manually copy the transaction details")
-      document.getElementById("enableEthereumButton").style.display = "none";
-      document.getElementById("sendTransaction").style.display = "none";
-      web3 = new Web3();
-      
+web3_to_init=true
+function on_participate(){
+    if(web3_to_init){
+        web3_to_init=false
+        if ((typeof window.ethereum !== 'undefined') || (typeof window.web3 !== 'undefined')){
+            web3 = new Web3(web3.currentProvider);
+            web3.eth.net.getNetworkType().then(function(network){
+                if(network!="main"){
+                    change_main_network();
+                }
+            }); 
+            window.ethereum.on('chainChanged', function handleChainChanged(_chainId) {
+                // We recommend reloading the page, unless you must do otherwise
+                window.location.reload();
+            });        
+            window.ethereum.on('accountsChanged', function (accounts) {
+                console.log('accountsChanges',accounts);
+                if (accounts.length === 0){console.log('Please connect to MetaMask.');}
+                else{
+                    document.getElementById("add").value = accounts[0];
+                }
+            });
+        } else{
+        alert("No Metamask plugin detected. Please install Metamask. Otherwise proceed carefully and manually copy the transaction details")
+        document.getElementById("enableEthereumButton").style.display = "none";
+        document.getElementById("sendTransaction").style.display = "none";
+        web3 = new Web3();      
+        }
     }
+    else{console.log("web3 already inited")}
+    //ctx.fillText("EP"+String(epoch), 1, 1);
+    tile_img_ob=document.getElementById("tile_img")
+    tile_img_ob.style.width=String(tile_size+"px");
+    tile_img_ob.style.left=String((epoch_px[0][0]+64)+"px");
+    tile_img_ob.style.top=String((epoch_px[0][1]+185)+"px");
+}
+async function init(){
+    
     document.getElementById("nft_address").innerHTML=nft_vote_address
     //get current epoch
     await fetch('./epoch.json',{
