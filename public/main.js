@@ -347,6 +347,7 @@ async function init(){
     ).then(res => res.text()).then(function(data) {
         
         const data_obj = JSON.parse(data)
+        data_obj["epoch"]=1
         console.log("current epoch: ",data_obj["epoch"])
         if("epoch_"+data_obj["epoch"] in data_obj){
             let end_epoch=data_obj["epoch_"+data_obj["epoch"]]["time"]["end_epoch"]
