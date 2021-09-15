@@ -246,8 +246,8 @@ def update_nft(vote):
             for y in range(int(tile_size)):
                 vote["px"].append("#{:06x}".format(random.randint(0, 0xFFFFFF)))              
     counter=0 
-    for x in range(int(tile_size)):
-        for y in range(int(tile_size)):
+    for y in range(int(tile_size)):
+        for x in range(int(tile_size)):
             px=vote.get("px")[counter]
             pix[x+left_top[0],y+left_top[1]] = ImageColor.getcolor(px, "RGB")  # Set the RGBA Value of the image (tuple)
             counter=counter+1
