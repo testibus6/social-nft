@@ -68,14 +68,16 @@
         </div>
         <div class="col-9 col-sm-5 col-md-5 col-lg-4">
             <a class="navbar-brand" href="#">
-                First community-based NFT
+                Community-based NFT
             </a>            
         </div>
         <div class="col-12 col-sm-5 col-md-5 col-lg-4 d-flex justify-content-md-end mt-3 mt-md-0">
             <div>
+                <!--
                 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="0.62em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 417"><path fill="#343434" d="M127.961 0l-2.795 9.5v275.668l2.795 2.79l127.962-75.638z"/><path fill="#8C8C8C" d="M127.962 0L0 212.32l127.962 75.639V154.158z"/><path fill="#3C3C3B" d="M127.961 312.187l-1.575 1.92v98.199l1.575 4.6L256 236.587z"/><path fill="#8C8C8C" d="M127.962 416.905v-104.72L0 236.585z"/><path fill="#141414" d="M127.961 287.958l127.96-75.637l-127.96-58.162z"/><path fill="#393939" d="M0 212.32l127.96 75.638v-133.8z"/></svg>
+                -->
                 <button class="btn btn-secondary " type="button" >
-                  <span id="display_eth_address" onclick="getAccount_init()">Get ETH-address</span>
+                  <span id="display_eth_address" onclick="getAccount_init()">Connect Wallet</span>
                 </button>
             </div>
         </div>
@@ -142,7 +144,7 @@
                         <div class="col-12 col-xl-8 mb-6 mb-lg-0">
                             <div class="card text-center">
                                 <h5 class="card-header">Create your bid for period: <span id="vote_creation"></span></h5>
-                                <div class="card-body text-left" style="height: 320px; overflow: hidden;">                                
+                                <div class="card-body text-left">                                
                                     <ol>
                                         <li>
                                         <label for="file">Upload file:</label>
@@ -151,49 +153,52 @@
                                         </form>                
                                         </li>
                                         <li>
-                                        <label for="add">Your Address:</label>
+                                        <label for="add">Your address:</label>
                                         <input oninput="validated_address()" type="text" id="add" name="add" required minlength="42" maxlength="42">                
+                                        <!--
                                         <i class="fa fa-copy" id="copied" onclick="copyaddress('add')"></i>
-                                        <button id="enableEthereumButton" onclick="getAccount()">Get Address</button>
+                                        <button id="enableEthereumButton" onclick="getAccount()">Connect Wallet</button>
+                                        -->
                                         </li>
                                         <li>
                                         <form >
-                                            <label for="amount">Amount [Eth]:</label>
+                                            <label for="amount">Your amount [Eth]:</label>
                                             <input type="number" id="amount" name="amount" value="0.005" min="0" step="0.001">
                                         </form>
                                         </li>
-                                        <li><button onclick="submitVote()">Submit bid</button><div class="loader2" id="vote_loader"></div></li>
+                                        <li>Submit your bid: <button onclick="submitVote()">Submit</button><div class="loader2" id="vote_loader"></div><span style="display:none" id="vote_loader_info">This might take a few seconds...</span></li>
                                         <li id="vote_result_li">
-                                        <p id="vote_result" >Send Transaction (once bid is registered)</p>
-                                        <ol id="transaction_details" style="display: none" type="disc">
-                                            <li id="from_add">Coffee</li>
-                                            <li id="to_add">Tea</li>
-                                            <li id="vote_amount">Milk</li>
-                                        </ol> 
-                                        <button id="sendTransaction" onclick="submitTransaction()" style="display: none">Send Transaction to <span id="nft_address"></span></button>
+                                        <p id="vote_result" >Send Transaction:</p>
+                                        <ol id="transaction_details" type="disc">
+                                            <li >From: <span id="from_add">-</span></li>
+                                            <li >To: <span id="to_add">-</span></li>
+                                            <li >Amount [ETH]: <span id="vote_amount">-</span></li>
+                                            <li><button id="sendTransaction" onclick="submitTransaction()">Send Transaction <span id="nft_address">-</span></button></li>    
                                         </li>
+                                        </ol> 
+                                        
                                     </ol>
                                 </div>
                             </div>
                         </div>  
                         <div class="col-12 col-xl-4">
                             <div class="card text-center">
-                                <h5 class="card-header">Details about current period:</h5>
-                                <div class="card-body text-left" style="height: 320px; overflow: hidden;">
+                                <h5 class="card-header">Details about current period</h5>
+                                <div class="card-body text-left" style="height: 200px; overflow: hidden;">
                                     <ul>
-                                        <li>Highest bid in this period: <span id="highestvote">-</span> ETH <small>(status: <span id="last_update">-</span>)</small> at <span id="verfied_votes"></span> verfied votes</li>
-                                        <li>Time left in this period: <span id="countdown">-</span></li>
+                                        <li>Highest bid: <span id="highestvote">-</span> ETH <span id="details_votes"> out of <span id="verfied_votes"></span> votes <small><span id="last_update">(-)</span></small></span></li>
+                                        <li>Countdown: <span id="countdown">-</span></li>
                                         <li>Preview / Order of periods:</li>
                                     </ul>
-                                        <img src="./epochs.png" id="nft" alt="Current-nft" class="img-responsive" style="position: absolute; top:185px; left: 200px; width: 64px;" >
-                                        <img src="./nft_temp.png" id="nft_preview" alt="Preview-nft" class="img-responsive"  style="position:absolute; top:185px; left: 64px; width: 64px;">
-                                        <img src="" id="tile_img" class="img-responsive"  style="position:absolute; top:185px; left: 64px;">                                   
+                                        <img src="./epochs.png" id="nft" alt="Current-nft" class="img-responsive" style="position: absolute; top:150px; left: 200px; width: 64px;" >
+                                        <img src="./nft_temp.png" id="nft_preview" alt="Preview-nft" class="img-responsive"  style="position:absolute; top:150px; left: 64px; width: 64px;">
+                                        <img src="" id="tile_img" class="img-responsive"  style="position:absolute; top:150px; left: 64px;">                                   
                                 </div>                                 
                             </div>
                         </div> 
                         <div class="col-12 col-lg-4">
                             <div class="card text-center">
-                                <h5 class="card-header ">Change bid pixelwise:</h5>
+                                <h5 class="card-header ">Change your bid pixel by pixel</h5>
                                     <div class="card-body text-left">
                                         <div>
                                             <button id="man_update_px" onclick="onchange_px_value()">Update preview</button>
@@ -237,7 +242,6 @@
     <script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
     <!-- Github buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script type="module">     
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js";
       

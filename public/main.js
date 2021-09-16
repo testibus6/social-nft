@@ -10,21 +10,36 @@ async function getAccount_init() {
     const account = accounts[0];
     console.log(account)
     document.getElementById("add").value = account;
-    document.getElementById("display_eth_address").innerHTML=String(account);
+    document.getElementById("display_eth_address").innerHTML=get_reduced_address(String(account),768);
 }
-
+function get_reduced_address(address,limit){
+    let reduced_add=String(address)
+    width = Math.max(
+        document.documentElement.clientWidth,
+        window.innerWidth || 0
+      )    
+    if (width <= limit){
+        let len_string=4
+        reduced_add=reduced_add.substr(0,len_string+1)+"..."+reduced_add.substr(-len_string,len_string)
+    }
+    return reduced_add
+}
 
 async function getAccount() {
     const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
     const account = accounts[0];
     console.log(account)
     document.getElementById("add").value = account;
-    document.getElementById("display_eth_address").innerHTML=account;
+    document.getElementById("display_eth_address").innerHTML=get_reduced_address(String(account),768);
     validated_address()
 }
 
+
 async function submitTransaction(){
     try {
+        console.log(String(document.getElementById("add").value))
+        console.log(nft_vote_address)
+
         const transactionHash = await ethereum.request({
           method: 'eth_sendTransaction',
           params: [
@@ -61,6 +76,7 @@ function validated_address(){
 
 async function submitVote() {
     document.getElementById("vote_loader").style.display="inline-block"
+    document.getElementById("vote_loader_info").style.display="inline-block"
     data={}
     px_values=[]
     for (let i = 0; i < tile_size*tile_size; i++) {
@@ -80,18 +96,12 @@ async function submitVote() {
                         body: JSON.stringify(data),
                     }
             ).then(res => res.text()).then(function(response) {
-                console.log(response)
                 document.getElementById("vote_loader").style.display="none"
-                document.getElementById("vote_result").style.display="block"
-                document.getElementById("vote_result_li").style.display="block"
-                
+                document.getElementById("vote_loader_info").style.display="none"                
                 if(response=="okay"){
-                    document.getElementById("transaction_details").style.display="block"
-                    document.getElementById("sendTransaction").style.display="block"
-                    document.getElementById("vote_result").innerHTML="Your vote was registered. Please send the following transaction:"
-                    document.getElementById("from_add").innerHTML="From: "+data["address"]
-                    document.getElementById("to_add").innerHTML="To: "+nft_vote_address
-                    document.getElementById("vote_amount").innerHTML="Amount [ETH]: "+data["amount"]
+                    document.getElementById("from_add").innerHTML=get_reduced_address(String(data["address"]),550);
+                    document.getElementById("to_add").innerHTML=get_reduced_address(String(nft_vote_address),550);
+                    document.getElementById("vote_amount").innerHTML=data["amount"];
                 }
                 else{
                     document.getElementById("vote_result").innerHTML="Following error occured: "+ response+""
@@ -99,11 +109,9 @@ async function submitVote() {
             })
         }
         else{
-            document.getElementById("vote_result").style.display="block"
             document.getElementById("vote_result").innerHTML="Please check your amount. It seems not to be a positive number"
         }
     }else{
-        document.getElementById("vote_result").style.display="block"
         document.getElementById("vote_result").innerHTML="Please check your address. It seems not to be a valid address"
     }
 }
@@ -146,7 +154,7 @@ function indicate_epoch(epoch){
     tile_img_ob.src =canvas.toDataURL();
     tile_img_ob.style.height=String(tile_size+"px");
     tile_img_ob.style.left=String((epoch_px[0][0]+64)+"px");
-    tile_img_ob.style.top=String((epoch_px[0][1]+185)+"px");
+    tile_img_ob.style.top=String((epoch_px[0][1]+150)+"px");
 }
 function onchange_px_value(){
     pos=0
@@ -178,7 +186,7 @@ function onchange_px_value(){
     tile_img_ob.src =canvas.toDataURL();
     tile_img_ob.style.width=String(tile_size+"px");
     tile_img_ob.style.left=String((epoch_px[0][0]+64)+"px");
-    tile_img_ob.style.top=String((epoch_px[0][1]+185)+"px");
+    tile_img_ob.style.top=String((epoch_px[0][1]+150)+"px");
 }
 function rgbToHex(r, g, b) {
     return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
@@ -236,7 +244,7 @@ function check_image(e) {
                     tile_img_ob.style.width=String(tile_size+"px");
                     tile_img_ob.style.height=String(tile_size+"px");
                     tile_img_ob.style.left=String((epoch_px[0][0]+64)+"px");
-                    tile_img_ob.style.top=String((epoch_px[0][1]+185)+"px");
+                    tile_img_ob.style.top=String((epoch_px[0][1]+150)+"px");
 
                     
                 }
@@ -323,23 +331,33 @@ function on_participate(){
                 }
             });
         } else{
-        alert("No Metamask plugin detected. Please install Metamask. Otherwise proceed carefully and manually copy the transaction details")
+        //alert("No Metamask plugin detected. Please install Metamask. Otherwise proceed carefully and manually copy the transaction details")
         document.getElementById("enableEthereumButton").style.display = "none";
         document.getElementById("sendTransaction").style.display = "none";
         web3 = new Web3();      
         }
     }
     else{console.log("web3 already inited")}
-    //ctx.fillText("EP"+String(epoch), 1, 1);
     tile_img_ob=document.getElementById("tile_img")
     tile_img_ob.style.width=String(tile_size+"px");
     tile_img_ob.style.left=String((epoch_px[0][0]+64)+"px");
-    tile_img_ob.style.top=String((epoch_px[0][1]+185)+"px");
+    tile_img_ob.style.top=String((epoch_px[0][1]+150)+"px");
 }
 
-async function init(){
+async function init(){ 
+    document.getElementById("nft_address").innerHTML="to " +String(get_reduced_address(String(nft_vote_address),930))
     
-    document.getElementById("nft_address").innerHTML=nft_vote_address
+    width = Math.max(
+        document.documentElement.clientWidth,
+        window.innerWidth || 0
+      )    
+    if (width <= 500){
+        document.getElementById("last_update").style.display="none"
+    }
+    if (width <= 390){
+        document.getElementById("nft_address").style.display="none"
+        document.getElementById("details_votes").style.display="none"   
+    }
     //get current epoch
     await fetch('./epoch.json',{
                 method: 'GET'
@@ -347,7 +365,6 @@ async function init(){
     ).then(res => res.text()).then(function(data) {
         
         const data_obj = JSON.parse(data)
-        data_obj["epoch"]=1
         console.log("current epoch: ",data_obj["epoch"])
         if("epoch_"+data_obj["epoch"] in data_obj){
             let end_epoch=data_obj["epoch_"+data_obj["epoch"]]["time"]["end_epoch"]
@@ -401,7 +418,7 @@ async function init(){
     ).then(res => res.text()).then(function(data) {
         const data_obj = JSON.parse(data);       
         document.getElementById("highestvote").innerHTML=data_obj["amount"]
-        document.getElementById("last_update").innerHTML=create_timestamp(data_obj["timestamp"])
+        document.getElementById("last_update").innerHTML="("+String(create_timestamp(data_obj["timestamp"]))+")"
         document.getElementById("verfied_votes").innerHTML=data_obj["verfied_votes"]
      })
     setTimeout( function() { document.getElementById("sidebar").classList.remove("show") }, 500);
