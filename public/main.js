@@ -332,7 +332,7 @@ function on_participate(){
             });
         } else{
         //alert("No Metamask plugin detected. Please install Metamask. Otherwise proceed carefully and manually copy the transaction details")
-        document.getElementById("enableEthereumButton").style.display = "none";
+        //document.getElementById("enableEthereumButton").style.display = "none";
         document.getElementById("sendTransaction").style.display = "none";
         web3 = new Web3();      
         }

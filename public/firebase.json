@@ -28,11 +28,11 @@
       "destination": "https://storage.googleapis.com/app_src/lead_vote.json",
       "type":302
       },
-      { 
+      /*{ 
         "source": "/main.js",
         "destination": "https://storage.googleapis.com/app_src/main.js",
         "type":302
-      },
+      },*/
       { 
         "source": "/main.css",
         "destination": "https://storage.googleapis.com/app_src/main.css",
