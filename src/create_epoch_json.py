@@ -12,7 +12,10 @@ def create_nft_template(img_size=128):
     img.save("../public/nft_temp_draft.png", "PNG")
 
 import json
-start_time=1631543400*1000
+start_time=1636569256*1000
+short_duration = 6*3600*1000
+long_duration  = 12*3600*1000
+between_duration = 1*3600*1000#
                     
 def create_epoch_px_lookup(img=128,epoch_base=8):
     epoch=dict()
@@ -72,9 +75,6 @@ def create_epoch_px_lookup(img=128,epoch_base=8):
     return epoch
 
 def create_epoch_time_lookup(stepsize,counter,epoch):
-    short_duration = 24*60*60*1000#24*3600*1000/24 #1 day
-    long_duration  = 48*60*60*1000#2*24*3600*1000 #2day s
-    between_duration = 6*60*60*1000#6*3600*1000 #6 hours
     end_last_epoch= epoch.get("epoch_"+str(counter-1),{}).get("time",{}).get("end_epoch",0)
     if end_last_epoch==0:
         end_last_epoch=start_time-between_duration

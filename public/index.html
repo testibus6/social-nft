@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Community-based NFT</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
     <link rel="stylesheet" href="./main.css">
     <style>
         .sidebar {
@@ -47,16 +46,6 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-    <script>
-        function to_participate(){
-            document.getElementById("participate_nav").click()
-            document.getElementById("sidebar").classList.remove("show")
-        }
-        function to_rules(){
-            document.getElementById("rules_nav").click()
-            document.getElementById("sidebar").classList.remove("show")
-        }
-    </script>
     <script type="application/javascript"src="./main.js"></script>
 </head>
 <body onload="init()">
@@ -68,15 +57,12 @@
         </div>
         <div class="col-9 col-sm-5 col-md-5 col-lg-4">
             <a class="navbar-brand" href="#">
-                Community-based NFT
+                <b>Community-based NFT</b>
             </a>            
         </div>
         <div class="col-12 col-sm-5 col-md-5 col-lg-4 d-flex justify-content-md-end mt-3 mt-md-0">
             <div>
-                <!--
-                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="0.62em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 417"><path fill="#343434" d="M127.961 0l-2.795 9.5v275.668l2.795 2.79l127.962-75.638z"/><path fill="#8C8C8C" d="M127.962 0L0 212.32l127.962 75.639V154.158z"/><path fill="#3C3C3B" d="M127.961 312.187l-1.575 1.92v98.199l1.575 4.6L256 236.587z"/><path fill="#8C8C8C" d="M127.962 416.905v-104.72L0 236.585z"/><path fill="#141414" d="M127.961 287.958l127.96-75.637l-127.96-58.162z"/><path fill="#393939" d="M0 212.32l127.96 75.638v-133.8z"/></svg>
-                -->
-                <button class="btn btn-secondary " type="button" >
+                <button class="btn btn-primary" type="button" id="connect_wallet">
                   <span id="display_eth_address" onclick="getAccount_init()">Connect Wallet</span>
                 </button>
             </div>
@@ -125,7 +111,7 @@
                                     <h5 class="card-header">Project description</h5>
                                     <div class="card-body">
                                         <p >Together as a community we will make a community-NFT. The idea is to "bid" for a 64px x 64px Image-NFT together made out of 37 tiles. Each period you have the chance insert your tile into the NFT. To verfiy your bid, it is required to send a transaction to this <a href="https://etherscan.io/address/0x703091392E1BEa715d9F93DaB57DAfA8bB0f45bF" target="_blank">ETH-address</a>  with your specified amount in ETH. At the end of each period, the submitted tile with the biggest amount will be added to the NFT. Once all tiles are bidded, an NFT will be created and auctioned on <a href="https://opensea.io/" target="_blank">opensea.io</a> or a similar plattform. The link will be provided on this website.</p>
-                                        <p >To get started head over to <a href="#participate_nav" onclick="to_participate()">participate</a> or for more technical details see the <a href="#rules_nav" onclick="to_rules()">rules</a> section.</p>
+                                        <p >To get started head over to <a href="#participate_nav" onclick="to_tab('participate_nav')">Participate</a> or for more technical details see the <a href="#rules_nav" onclick="to_tab('rules_nav')">Rules</a> section.</p>
                                     </div>
                                 </div>                        
                         </div>
@@ -155,10 +141,6 @@
                                         <li>
                                         <label for="add">Your address:</label>
                                         <input oninput="validated_address()" type="text" id="add" name="add" required minlength="42" maxlength="42">                
-                                        <!--
-                                        <i class="fa fa-copy" id="copied" onclick="copyaddress('add')"></i>
-                                        <button id="enableEthereumButton" onclick="getAccount()">Connect Wallet</button>
-                                        -->
                                         </li>
                                         <li>
                                         <form >
@@ -166,17 +148,16 @@
                                             <input type="number" id="amount" name="amount" value="0.005" min="0" step="0.001">
                                         </form>
                                         </li>
-                                        <li>Submit your bid: <button onclick="submitVote()">Submit</button><div class="loader2" id="vote_loader"></div><span style="display:none" id="vote_loader_info">This might take a few seconds...</span></li>
+                                        <li>Submit your bid: <button onclick="submitVote()" class="btn btn-secondary btn-sm" id="submit_bid">Submit</button><div id="loader" style="display:none"><div class="loader2"></div><span>This might take a few seconds...</span></div></li>
                                         <li id="vote_result_li">
                                         <p id="vote_result" >Send Transaction:</p>
                                         <ol id="transaction_details" type="disc">
                                             <li >From: <span id="from_add">-</span></li>
                                             <li >To: <span id="to_add">-</span></li>
                                             <li >Amount [ETH]: <span id="vote_amount">-</span></li>
-                                            <li><button id="sendTransaction" onclick="submitTransaction()">Send Transaction <span id="nft_address">-</span></button></li>    
+                                            <li><button id="sendTransaction" onclick="submitTransaction()" class="btn btn-secondary btn-sm">Send Transaction <span id="nft_address">-</span></button></li>    
                                         </li>
                                         </ol> 
-                                        
                                     </ol>
                                 </div>
                             </div>
@@ -201,7 +182,7 @@
                                 <h5 class="card-header ">Change your bid pixel by pixel</h5>
                                     <div class="card-body text-left">
                                         <div>
-                                            <button id="man_update_px" onclick="onchange_px_value()">Update preview</button>
+                                            <button id="man_update_px" onclick="onchange_px_value()" class="btn btn-secondary btn-sm">Update preview</button>
                                             <table id="vote_table"></table> 
                                         </div>     
                                     </div>
@@ -213,7 +194,7 @@
                     <div class="row" id="rules">
                         <h4 >Basic rules:</h4>
                         <ol>
-                        <li >By sending your bid or/and ETH-transaction, you do not obtain any guarantee or right that your tile will be included. The transaction amount is simply considered to be a donation to the address. Indeed I am not planning on this to happen, but one never knows.</li>
+                        <li >By sending your bid or/and ETH-transaction, you do not obtain any guarantee or right that your tile will be included. The transaction amount is simply considered to be a donation to the address.</li>
                         <li >When submitting your bid, you confirm that no third-party has a copyright on the submitted image/pixels. Hence be creative yourself!</li>
                         <li >By submitting your bid, you agree that is file will be used as a part of a bigger image to create an NFT, which later will be auctioned. You will not receive any compensation.</li>
                         <li >In order to enable to continue the minting of the NFT without any violation of copyrights later on, the processor has the right to remove bids - which might violate intellectual property. Any submitted logos, NFTs, or other trademarked icons/images will be removed. So be creative!</li>
@@ -227,55 +208,32 @@
                     </div>
                 </div>
                 <footer class="pt-5 d-flex justify-content-between">
-                    <span>Copyright © 2021 testibus6
+                    <span><i><small>Copyright © 2021 testibus6</i></small>
                         <a href="https://github.com/testibus6/social-nft" target="_blank" data-color-scheme="no-preference: dark; light: light; dark: light;" >
                             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385c.6.105.825-.255.825-.57c0-.285-.015-1.23-.015-2.235c-3.015.555-3.795-.735-4.035-1.41c-.135-.345-.72-1.41-1.23-1.695c-.42-.225-1.02-.78-.015-.795c.945-.015 1.62.87 1.845 1.23c1.08 1.815 2.805 1.305 3.495.99c.105-.78.42-1.305.765-1.605c-2.67-.3-5.46-1.335-5.46-5.925c0-1.305.465-2.385 1.23-3.225c-.12-.3-.54-1.53.12-3.18c0 0 1.005-.315 3.3 1.23c.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23c.66 1.65.24 2.88.12 3.18c.765.84 1.23 1.905 1.23 3.225c0 4.605-2.805 5.625-5.475 5.925c.435.375.81 1.095.81 2.22c0 1.605-.015 2.895-.015 3.3c0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" fill="currentColor"/></g></svg>
                         </a>
                     </span>
-                   
                 </footer>
             </main>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js" integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
-    <!-- Github buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <script type="module">     
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js";
-      
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js";      
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-analytics.js";
-         
-        const firebaseConfig = {
-      
+        const firebaseConfig = {      
           apiKey: "AIzaSyB2GyilXi6TQ0SC7Efi7hn9c_CDDo2Wgrk",
-      
-          authDomain: "social-nft.firebaseapp.com",
-      
-          projectId: "social-nft",
-      
-          storageBucket: "social-nft.appspot.com",
-      
-          messagingSenderId: "890083381997",
-      
-          appId: "1:890083381997:web:26b7ef414b19e5d27572e4",
-      
-          measurementId: "G-6THW389TS4"
-      
-        };    
-            
+          authDomain: "social-nft.firebaseapp.com",      
+          projectId: "social-nft",      
+          storageBucket: "social-nft.appspot.com",      
+          messagingSenderId: "890083381997",      
+          appId: "1:890083381997:web:26b7ef414b19e5d27572e4",      
+          measurementId: "G-6THW389TS4"      
+        };                
         const app = initializeApp(firebaseConfig);
-      
         const analytics = getAnalytics(app);
-
-        const navLinks = document.querySelectorAll('.nav-item');
-        const menuToggle = document.getElementById("sidebar");
-        const bsCollapse = new bootstrap.Collapse(menuToggle);
-        navLinks.forEach((l) => {
-            l.addEventListener('click', () => {bsCollapse.toggle()})
-        })  
-                   
       </script>
 </body>
 </html>

@@ -5,22 +5,34 @@ Created on Fri Jul 30 18:25:13 2021
 
 @author: 
 """
+
+CHAIN="POLYGON"
+TARGET_ADDRESS="0x703091392E1BEa715d9F93DaB57DAfA8bB0f45bF".lower()
+EPOCH_COOLDOWN=1*3600*1000
+T0=1631541640
+
+
 import csv
 import time
-#etherscan-python
-from etherscan import Etherscan
+
 import os
 import json
-import sys
+#import sys
 from google.api_core.exceptions import Conflict
 #from web3.types import Timestamp
-#eth = Etherscan(os.getenv('ETHERSCAN-API-KEY'),net='kovan')
-eth = Etherscan(os.getenv('ETHERSCAN-API-KEY'))
 
-#timeslots for voting
-#timeslots for transactions
+if CHAIN=="ETHERUM":
+    #etherscan-python
+    from etherscan import Etherscan
+    #eth = Etherscan(os.getenv('ETHERSCAN-API-KEY'),net='kovan')
+    blockchain_client = Etherscan(os.getenv('ETHERSCAN-API-KEY'))
 
-TARGET_ADDRESS="0x703091392E1BEa715d9F93DaB57DAfA8bB0f45bF".lower()
+if CHAIN=="POLYGON":
+    #pip install polygonscan-python
+    from polygonscan import PolygonScan
+    blockchain_client = PolygonScan(os.getenv('POLYSCAN-API-KEY')) # key in quotation marks
+init_block=blockchain_client.get_block_number_by_timestamp(timestamp=T0, closest="before")
+
 WEI=1000000000000000000
 from google.cloud import storage
 storage_client = storage.Client()
@@ -28,7 +40,7 @@ BUCKET_NAME=os.getenv('DATA_BUCKET')
 APP_BUCKET_NAME=os.getenv('SERVICE_BUCKET')
 REGION=os.environ.get("REGION","")
 
-EPOCH_COOLDOWN=6*3600*1000
+
 from google.cloud import bigquery
 bigquery_client = bigquery.Client()
 epoch_filename='epoch.json'
@@ -41,7 +53,7 @@ epoch_time=dict()
 
 BASE_PATH="/tmp/"
 block_file='handled_blocks.csv'
-init_block=eth.get_block_number_by_timestamp(timestamp=1631541640, closest="before")
+
 
 def download_blob(bucket_name, source_blob_name, destination_file_name):
     """Downloads a blob from the bucket."""
@@ -168,7 +180,7 @@ def get_last_handled_block():
 def get_last_transactions(start_block,last_block):
     print("start: ",start_block," end-block: ",last_block)
     try:
-        transactions=eth.get_normal_txs_by_address(TARGET_ADDRESS,start_block,last_block,"asc")
+        transactions=blockchain_client.get_normal_txs_by_address(TARGET_ADDRESS,start_block,last_block,"asc")
         print(transactions)
     except:
         transactions=list()
@@ -176,9 +188,9 @@ def get_last_transactions(start_block,last_block):
 
 def remove_duplicate_transactions():
     dataset_ref = bigquery_client.dataset(epoch_dataset)
-    table_ref_votes = dataset_ref.table("nft_votes")
-    table_ref_transactions = dataset_ref.table("nft_transactions")
-    table = bigquery_client.get_table(table_ref_votes)
+    #table_ref_votes = dataset_ref.table("nft_votes")
+    #table_ref_transactions = dataset_ref.table("nft_transactions")
+    #table = bigquery_client.get_table(table_ref_votes)
     query_str="""
             CREATE OR REPLACE TABLE `create-nft.{epoch_dataset}.nft_transactions_red`
             AS SELECT DISTINCT * FROM `create-nft.{epoch_dataset}.nft_transactions`
@@ -190,9 +202,9 @@ def remove_duplicate_transactions():
 
 def match_transactions_with_votes_in_bigquery():
     dataset_ref = bigquery_client.dataset(epoch_dataset)
-    table_ref_votes = dataset_ref.table("nft_votes")
-    table_ref_transactions = dataset_ref.table("nft_transactions")
-    table = bigquery_client.get_table(table_ref_votes)
+    #table_ref_votes = dataset_ref.table("nft_votes")
+    #table_ref_transactions = dataset_ref.table("nft_transactions")
+    #table = bigquery_client.get_table(table_ref_votes)
     query_str="""
             UPDATE `create-nft.{epoch_dataset}.nft_transactions` t
             SET matched = true
@@ -204,8 +216,8 @@ def match_transactions_with_votes_in_bigquery():
 
 def get_number_verfied_votes():
     dataset_ref = bigquery_client.dataset(epoch_dataset)
-    table_ref_votes = dataset_ref.table("nft_votes")
-    table = bigquery_client.get_table(table_ref_votes)
+    #table_ref_votes = dataset_ref.table("nft_votes")
+    #table = bigquery_client.get_table(table_ref_votes)
     query_str='''SELECT * FROM `create-nft.{epoch_dataset}.nft_votes` WHERE verified=TRUE'''.format(epoch_dataset=epoch_dataset)
     query_job = bigquery_client.query(query_str) 
     results = query_job.result() # Wait for the job to complete.
@@ -215,8 +227,8 @@ def get_number_verfied_votes():
 
 def get_biggest_voter():
     dataset_ref = bigquery_client.dataset(epoch_dataset)
-    table_ref_votes = dataset_ref.table("nft_votes")
-    table = bigquery_client.get_table(table_ref_votes)
+    #table_ref_votes = dataset_ref.table("nft_votes")
+    #table = bigquery_client.get_table(table_ref_votes)
     query_str='''SELECT * FROM `create-nft.{epoch_dataset}.nft_votes` WHERE verified=TRUE  ORDER BY amount DESC, time ASC LIMIT 1'''.format(epoch_dataset=epoch_dataset)
     query_job = bigquery_client.query(query_str) 
     results = query_job.result() # Wait for the job to complete.
@@ -281,15 +293,24 @@ def reset_biggest_voter():
 def update_epoch():
     global epoch,epoch_file_age,epoch_dataset,epoch_px,epoch_time
     if (time.time()-epoch_file_age > 30):
-        storage_client = storage.Client()
+        #storage_client = storage.Client()
         download_blob(APP_BUCKET_NAME, epoch_filename, BASE_PATH+epoch_filename)
         with open(BASE_PATH+epoch_filename,"r") as f: 
             epoch_info=json.loads(f.read())
         epoch_file_age=time.time()
-        epoch=epoch_info["epoch"]
-        epoch_dataset="nft_epoch"+str(epoch)
-        epoch_px=epoch_info["epoch_"+str(epoch)]["px"]
-        epoch_time=epoch_info["epoch_"+str(epoch)]["time"]
+        try:
+            epoch=epoch_info["epoch"]
+            epoch_dataset="nft_epoch"+str(epoch)
+            epoch_px=epoch_info["epoch_"+str(epoch)]["px"]
+            epoch_time=epoch_info["epoch_"+str(epoch)]["time"]
+            return True
+        except:
+            print("Last Episode. Use previous epoch-values")
+            epoch=epoch_info["epoch"]-1
+            epoch_dataset="nft_epoch"+str(epoch)
+            epoch_px=epoch_info["epoch_"+str(epoch)]["px"]
+            epoch_time=epoch_info["epoch_"+str(epoch)]["time"]
+            return False
 
 
 def store_biggest_voter(result_vote):
@@ -317,8 +338,8 @@ def store_biggest_voter(result_vote):
 
 def update_votes_in_bigquery():
     dataset_ref = bigquery_client.dataset(epoch_dataset)
-    table_ref_votes = dataset_ref.table("nft_votes")
-    table = bigquery_client.get_table(table_ref_votes)
+    #table_ref_votes = dataset_ref.table("nft_votes")
+    #table = bigquery_client.get_table(table_ref_votes)
     query_str="""
             UPDATE `create-nft.{epoch_dataset}.nft_votes` v
             SET verified = true
@@ -330,8 +351,8 @@ def update_votes_in_bigquery():
 
 def export_transactions_to_bigquery(transactions):
     dataset_ref = bigquery_client.dataset(epoch_dataset)
-    table_ref_transactions = dataset_ref.table("nft_transactions")
-    table = bigquery_client.get_table(table_ref_transactions)
+    #table_ref_transactions = dataset_ref.table("nft_transactions")
+    #table = bigquery_client.get_table(table_ref_transactions)
 
     if len(transactions)>0:
         query_str="""INSERT `create-nft.{epoch_dataset}.nft_transactions` (address,amount,matched) VALUES""".format(epoch_dataset=epoch_dataset)
@@ -346,7 +367,7 @@ def export_transactions_to_bigquery(transactions):
 
 
 def check_transactions(request):
-    update_epoch()
+    ret= update_epoch()
     time_now=int(time.time()*1000)
     
     #get last handled block
@@ -357,7 +378,7 @@ def check_transactions(request):
         time_now=EPOCH_COOLDOWN+epoch_time["end_epoch"]
 
     #get last blockchain-block
-    current_block=eth.get_block_number_by_timestamp(timestamp=int(time_now/1000), closest="before")
+    current_block=blockchain_client.get_block_number_by_timestamp(timestamp=int(time_now/1000), closest="before")
 
     #get all incoming transactions of address
     transactions=get_last_transactions(last_block,current_block)

@@ -2,15 +2,22 @@ const nft_vote_address='0x703091392E1BEa715d9F93DaB57DAfA8bB0f45bF'
 var tile_size=0
 var epoch_px=[[0,0],[0,0]]
 
+function to_tab(tab){
+            document.getElementById(tab).click()
+            document.getElementById("sidebar").classList.remove("show")
+            setTimeout( function() { document.getElementById("sidebar").classList.remove("show") }, 400);
+}
 async function getAccount_init() {
     if(web3_to_init){
         on_participate();
     }
-    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-    const account = accounts[0];
-    console.log(account)
-    document.getElementById("add").value = account;
-    document.getElementById("display_eth_address").innerHTML=get_reduced_address(String(account),768);
+    if (!document.getElementById("connect_wallet").disabled){
+		const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+		const account = accounts[0];
+		console.log(account)
+		document.getElementById("add").value = account;
+		document.getElementById("display_eth_address").innerHTML=get_reduced_address(String(account),768);
+	}
 }
 function get_reduced_address(address,limit){
     let reduced_add=String(address)
@@ -59,24 +66,27 @@ async function submitTransaction(){
 
 function validated_address(){
     try {
-        const address = web3.utils.toChecksumAddress(document.getElementById("add").value)
+		temp_ob=document.getElementById("submit_bid");
+		temp_ob.classList.remove("btn-success");
+		temp_ob.classList.add("btn-secondary");
+        temp_ob.disabled=false;
+        const address = web3.utils.toChecksumAddress(document.getElementById("add").value);
         result=web3.utils.isAddress(address)
         if(result){
-            document.getElementById("add").style.color='green'
+            document.getElementById("add").style.color='green';
         }
         else{
-            console.log("unverfied address")
-            document.getElementById("add").style.color='red'
+            console.log("unverfied address");
+            document.getElementById("add").style.color='red';
         }
       } catch(e) { 
-        console.error('invalid ethereum address', e.message) 
-        document.getElementById("add").style.color='red'
+        console.error('invalid ethereum address', e.message); 
+        document.getElementById("add").style.color='red';
       }
 }
 
 async function submitVote() {
-    document.getElementById("vote_loader").style.display="inline-block"
-    document.getElementById("vote_loader_info").style.display="inline-block"
+    document.getElementById("loader").style.display="inline-block";
     data={}
     px_values=[]
     for (let i = 0; i < tile_size*tile_size; i++) {
@@ -96,12 +106,15 @@ async function submitVote() {
                         body: JSON.stringify(data),
                     }
             ).then(res => res.text()).then(function(response) {
-                document.getElementById("vote_loader").style.display="none"
-                document.getElementById("vote_loader_info").style.display="none"                
+                document.getElementById("loader").style.display="none";
                 if(response=="okay"){
                     document.getElementById("from_add").innerHTML=get_reduced_address(String(data["address"]),550);
                     document.getElementById("to_add").innerHTML=get_reduced_address(String(nft_vote_address),550);
                     document.getElementById("vote_amount").innerHTML=data["amount"];
+                    temp_ob=document.getElementById("submit_bid");
+                    temp_ob.classList.add("btn-success");
+                    temp_ob.disabled=true;
+                    temp_ob.classList.remove("btn-secondary");
                 }
                 else{
                     document.getElementById("vote_result").innerHTML="Following error occured: "+ response+""
@@ -331,9 +344,8 @@ function on_participate(){
                 }
             });
         } else{
-        //alert("No Metamask plugin detected. Please install Metamask. Otherwise proceed carefully and manually copy the transaction details")
-        //document.getElementById("enableEthereumButton").style.display = "none";
-        document.getElementById("sendTransaction").style.display = "none";
+        document.getElementById("sendTransaction").disabled = true;
+        document.getElementById("connect_wallet").disabled = true; 
         web3 = new Web3();      
         }
     }
@@ -346,7 +358,13 @@ function on_participate(){
 
 async function init(){ 
     document.getElementById("nft_address").innerHTML="to " +String(get_reduced_address(String(nft_vote_address),930))
-    
+    const navLinks = document.querySelectorAll('.nav-item');
+    const menuToggle = document.getElementById("sidebar");
+    const bsCollapse = new bootstrap.Collapse(menuToggle);
+    navLinks.forEach((l) => {
+            l.addEventListener('click', () => {bsCollapse.toggle()})
+    })                   
+        
     width = Math.max(
         document.documentElement.clientWidth,
         window.innerWidth || 0
