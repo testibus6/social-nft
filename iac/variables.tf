@@ -15,7 +15,11 @@ variable "zone" {
 variable "environment" {
   description = "environment of deplyoment prod,dev,.."
   type        = string
+  default = "dev"
 }
 variable "etherscan_api_key" {
+  type = string
+}
+variable "polyscan_api_key" {
   type = string
 }

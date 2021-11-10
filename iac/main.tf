@@ -6,11 +6,11 @@ terraform {
       version = "3.77.0"
     }
   }
-  //backend "gcs"{
-  //  bucket      = "service_src" 
-  //  prefix      = "dev"
-  //  credentials = "create-nft.json"
-  //}
+  backend "gcs"{
+    bucket      = "service_src" 
+    prefix      = "dev"
+    credentials = "create-nft.json"
+  }
 }
 provider "google" {
   credentials = file("create-nft.json")
@@ -139,7 +139,7 @@ resource "google_bigquery_table" "nft_transactions" {
 #   //cache_control = "no-store"
 # }
 #Upload file into bucket
-resource "google_storage_bucket_object" "app_js" {  
+/* resource "google_storage_bucket_object" "app_js" {  
   name   = "main.js"
   content_type ="application/javascript"
   bucket = google_storage_bucket.app_bucket.name
@@ -153,7 +153,7 @@ resource "google_storage_bucket_object" "app_css" {
   bucket = google_storage_bucket.app_bucket.name
   source = "${path.root}/../public/main_red.css"
   //cache_control = "no-store"
-}
+} */
 
 resource "google_storage_bucket_object" "app_epochs_png" {  
   name   = "epochs.png"
@@ -185,7 +185,7 @@ resource "google_storage_bucket_object" "nft_temp_img" {
   cache_control = "no-store"
 }
 
- resource "google_storage_object_access_control" "public_rule_js" {
+/*  resource "google_storage_object_access_control" "public_rule_js" {
    bucket = google_storage_bucket.app_bucket.name
    object = google_storage_bucket_object.app_js.output_name
    role   = "READER"
@@ -193,7 +193,7 @@ resource "google_storage_bucket_object" "nft_temp_img" {
    depends_on = [
     google_storage_bucket_object.app_js
   ]
- }
+ } */
 
 # resource "google_storage_object_access_control" "public_rule_index" {
 #   bucket = google_storage_bucket.app_bucket.name
@@ -201,7 +201,7 @@ resource "google_storage_bucket_object" "nft_temp_img" {
 #   role   = "READER"
 #   entity = "allUsers"
 # }
-resource "google_storage_object_access_control" "public_rule_css" {
+/* resource "google_storage_object_access_control" "public_rule_css" {
   bucket = google_storage_bucket.app_bucket.name
   object = google_storage_bucket_object.app_css.output_name
   role   = "READER"
@@ -209,7 +209,7 @@ resource "google_storage_object_access_control" "public_rule_css" {
   depends_on = [
     google_storage_bucket_object.app_css
   ]
-}
+} */
 resource "google_storage_object_access_control" "public_rule_epochs_png" {
   bucket = google_storage_bucket.app_bucket.name
   object = google_storage_bucket_object.app_epochs_png.output_name
@@ -323,6 +323,7 @@ resource "google_cloudfunctions_function" "check_transactions" {
     PROJECT_ID = var.project_name
     REGION = var.region
     ETHERSCAN-API-KEY   = var.etherscan_api_key,
+    POLYSCAN-API-KEY  = var.polyscan_api_key,
     DATA_BUCKET         = google_storage_bucket.service_bucket.name,
     SERVICE_BUCKET      = google_storage_bucket.app_bucket.name
   }
@@ -341,7 +342,7 @@ resource "google_cloudfunctions_function_iam_member" "check_transactions" {
 resource "google_cloud_scheduler_job" "job_check_transactions" {
   name             = "trigger-check_transactions"
   description      = "Trigger the ${google_cloudfunctions_function.check_transactions.name} Cloud Function"
-  schedule         = "3 */1 * * *" # Every 3 hours "3 */3 * * *"
+  schedule         = "*/30 * * * *" # Every 3 hours "3 */3 * * *"
   time_zone        = "Europe/Dublin"
   attempt_deadline = "320s"
 

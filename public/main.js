@@ -328,6 +328,7 @@ function on_participate(){
         if ((typeof window.ethereum !== 'undefined') || (typeof window.web3 !== 'undefined')){
             web3 = new Web3(web3.currentProvider);
             web3.eth.net.getNetworkType().then(function(network){
+                console.log(network)
                 if(network!="main"){
                     change_main_network();
                 }

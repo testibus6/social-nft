@@ -89,7 +89,7 @@
                           </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="https://etherscan.io/address/0x703091392E1BEa715d9F93DaB57DAfA8bB0f45bF" target="_blank">
+                            <a class="nav-link" href="https://polygonscan.com/address/0x703091392E1BEa715d9F93DaB57DAfA8bB0f45bF" target="_blank">
                                 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></g></svg>
                                 <span style="font-style: italic;" class="ml-2">NFT-Address</span>
                             </a>
@@ -110,7 +110,7 @@
                                 <div class="card">
                                     <h5 class="card-header">Project description</h5>
                                     <div class="card-body">
-                                        <p >Together as a community we will make a community-NFT. The idea is to "bid" for a 64px x 64px Image-NFT together made out of 37 tiles. Each period you have the chance insert your tile into the NFT. To verfiy your bid, it is required to send a transaction to this <a href="https://etherscan.io/address/0x703091392E1BEa715d9F93DaB57DAfA8bB0f45bF" target="_blank">ETH-address</a>  with your specified amount in ETH. At the end of each period, the submitted tile with the biggest amount will be added to the NFT. Once all tiles are bidded, an NFT will be created and auctioned on <a href="https://opensea.io/" target="_blank">opensea.io</a> or a similar plattform. The link will be provided on this website.</p>
+                                        <p >Together as a community we will make a community-NFT. The idea is to "bid" for a 64px x 64px Image-NFT together made out of 37 tiles. Each period you have the chance insert your tile into the NFT. To verfiy your bid, it is required to send a transaction to this <a href="https://polygonscan.com/address/0x703091392E1BEa715d9F93DaB57DAfA8bB0f45bF" target="_blank">Polygon-address</a>  with your specified amount in Matic/Polygon. At the end of each period, the submitted tile with the biggest amount will be added to the NFT. Once all tiles are bidded, an NFT will be created and auctioned on <a href="https://opensea.io/" target="_blank">opensea.io</a> or a similar plattform. The link will be provided on this website.</p>
                                         <p >To get started head over to <a href="#participate_nav" onclick="to_tab('participate_nav')">Participate</a> or for more technical details see the <a href="#rules_nav" onclick="to_tab('rules_nav')">Rules</a> section.</p>
                                     </div>
                                 </div>                        
@@ -144,7 +144,7 @@
                                         </li>
                                         <li>
                                         <form >
-                                            <label for="amount">Your amount [Eth]:</label>
+                                            <label for="amount">Your amount [Matic]:</label>
                                             <input type="number" id="amount" name="amount" value="0.005" min="0" step="0.001">
                                         </form>
                                         </li>
@@ -154,7 +154,7 @@
                                         <ol id="transaction_details" type="disc">
                                             <li >From: <span id="from_add">-</span></li>
                                             <li >To: <span id="to_add">-</span></li>
-                                            <li >Amount [ETH]: <span id="vote_amount">-</span></li>
+                                            <li >Amount [Matic]: <span id="vote_amount">-</span></li>
                                             <li><button id="sendTransaction" onclick="submitTransaction()" class="btn btn-secondary btn-sm">Send Transaction <span id="nft_address">-</span></button></li>    
                                         </li>
                                         </ol> 
@@ -167,7 +167,7 @@
                                 <h5 class="card-header">Details about current period</h5>
                                 <div class="card-body text-left" style="height: 200px; overflow: hidden;">
                                     <ul>
-                                        <li>Highest bid: <span id="highestvote">-</span> ETH <span id="details_votes"> out of <span id="verfied_votes"></span> votes <small><span id="last_update">(-)</span></small></span></li>
+                                        <li>Highest bid: <span id="highestvote">-</span> Matic <span id="details_votes"> out of <span id="verfied_votes"></span> votes <small><span id="last_update">(-)</span></small></span></li>
                                         <li>Countdown: <span id="countdown">-</span></li>
                                         <li>Preview / Order of periods:</li>
                                     </ul>
@@ -194,7 +194,7 @@
                     <div class="row" id="rules">
                         <h4 >Basic rules:</h4>
                         <ol>
-                        <li >By sending your bid or/and ETH-transaction, you do not obtain any guarantee or right that your tile will be included. The transaction amount is simply considered to be a donation to the address.</li>
+                        <li >By sending your bid or/and Polygon-transaction, you do not obtain any guarantee or right that your tile will be included. The transaction amount is simply considered to be a donation to the address.</li>
                         <li >When submitting your bid, you confirm that no third-party has a copyright on the submitted image/pixels. Hence be creative yourself!</li>
                         <li >By submitting your bid, you agree that is file will be used as a part of a bigger image to create an NFT, which later will be auctioned. You will not receive any compensation.</li>
                         <li >In order to enable to continue the minting of the NFT without any violation of copyrights later on, the processor has the right to remove bids - which might violate intellectual property. Any submitted logos, NFTs, or other trademarked icons/images will be removed. So be creative!</li>
