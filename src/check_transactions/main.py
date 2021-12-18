@@ -17,20 +17,26 @@ import time
 
 import os
 import json
-#import sys
+import sys
 from google.api_core.exceptions import Conflict
 #from web3.types import Timestamp
 
-if CHAIN=="ETHERUM":
+if(CHAIN=="ETHERUM"):
     #etherscan-python
     from etherscan import Etherscan
     #eth = Etherscan(os.getenv('ETHERSCAN-API-KEY'),net='kovan')
     blockchain_client = Etherscan(os.getenv('ETHERSCAN-API-KEY'))
 
-if CHAIN=="POLYGON":
+if(CHAIN=="POLYGON"):
     #pip install polygonscan-python
     from polygonscan import PolygonScan
-    blockchain_client = PolygonScan(os.getenv('POLYSCAN-API-KEY')) # key in quotation marks
+    #blockchain_client = PolygonScan(os.getenv('POLYSCAN-API-KEY')) # key in quotation marks
+    from polygonscan.core.sync_client import SyncClient
+    from requests import Session
+    blockchain_client = SyncClient.from_session(
+            api_key=os.getenv('POLYSCAN-API-KEY'),
+            session=Session(),
+        )
 init_block=blockchain_client.get_block_number_by_timestamp(timestamp=T0, closest="before")
 
 WEI=1000000000000000000

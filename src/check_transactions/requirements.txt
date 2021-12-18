@@ -1,5 +1,5 @@
-etherscan-python==2.1.0
-polygonscan-python=1.0.2
+etherscan-python
+polygonscan-python==1.0.2
 google-cloud-storage
 google-cloud-bigquery
 Pillow

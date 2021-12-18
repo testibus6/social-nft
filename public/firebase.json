@@ -15,28 +15,28 @@
     "redirects":[
       {
         "source": "/handle_vote",
-        "destination": "https://us-central1-create-nft.cloudfunctions.net/handle_vote",
+        "destination": "https://us-central1-social-nft-backend.cloudfunctions.net/handle_vote",
         "type":302
         },
       {
       "source": "/nft_temp.png",
-      "destination": "https://storage.googleapis.com/app_src/nft_temp.png",
+      "destination": "https://storage.googleapis.com/social-nft-backend-app_src/nft_temp.png",
       "type":302
           },
       { 
       "source": "/lead_vote.json",
-      "destination": "https://storage.googleapis.com/app_src/lead_vote.json",
+      "destination": "https://storage.googleapis.com/social-nft-backend-app_src/lead_vote.json",
       "type":302
       },
       { 
         "source": "/epochs.png",
-        "destination": "https://storage.googleapis.com/app_src/epochs.png",
+        "destination": "https://storage.googleapis.com/social-nft-backend-app_src/epochs.png",
         "type":302
         },
 
       {
       "source": "/epoch.json",
-      "destination": "https://storage.googleapis.com/app_src/epoch.json",
+      "destination": "https://storage.googleapis.com/social-nft-backend-app_src/epoch.json",
       "type":302
           }
     ]

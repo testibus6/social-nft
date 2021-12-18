@@ -6,14 +6,14 @@ terraform {
       version = "3.77.0"
     }
   }
-  backend "gcs"{
-    bucket      = "service_src" 
-    prefix      = "dev"
-    credentials = "create-nft.json"
-  }
+  #backend "gcs"{
+  #  bucket      = "service_src" 
+  #  prefix      = "dev"
+  #  credentials = "social-nft-backend.json"
+  #}
 }
 provider "google" {
-  credentials = file("create-nft.json")
+  credentials = file("social-nft-backend.json")
   project     = var.project_name
   region      = var.region
   zone        = var.zone
@@ -43,12 +43,12 @@ resource "google_service_account" "service_account" {
 
 #Bucket
 resource "google_storage_bucket" "service_bucket" {
-  name     = "service_src"
+  name     = "${var.project_name}-service_src"
   location = var.region
 }
 
 resource "google_storage_bucket" "app_bucket" {
-  name     = "app_src"
+  name     = "${var.project_name}-app_src"
   location = var.region
   cors {
     origin          = ["*"]
@@ -310,7 +310,7 @@ resource "google_storage_bucket_object" "check_transactions" {
 resource "google_cloudfunctions_function" "check_transactions" {
   name        = "check_transactions"
   description = "check_transactions"
-  runtime     = "python37"
+  runtime     = "python38"
 
   available_memory_mb   = 128
   source_archive_bucket = google_storage_bucket.service_bucket.name
