@@ -6,11 +6,11 @@ terraform {
       version = "3.77.0"
     }
   }
-  #backend "gcs"{
-  #  bucket      = "service_src" 
-  #  prefix      = "dev"
-  #  credentials = "social-nft-backend.json"
-  #}
+  backend "gcs"{
+    bucket      = "social-nft-backend-tf_state" 
+    prefix      = "dev"
+    credentials = "social-nft-backend.json"
+  }
 }
 provider "google" {
   credentials = file("social-nft-backend.json")
@@ -30,7 +30,8 @@ module "project_services" {
    "cloudfunctions.googleapis.com",
    "iam.googleapis.com",
    "cloudbuild.googleapis.com",
-   "cloudscheduler.googleapis.com"
+   "cloudscheduler.googleapis.com",
+   "storage.googleapis.com"
   ]
   disable_services_on_destroy = false
   disable_dependent_services  = false
@@ -44,6 +45,10 @@ resource "google_service_account" "service_account" {
 #Bucket
 resource "google_storage_bucket" "service_bucket" {
   name     = "${var.project_name}-service_src"
+  location = var.region
+}
+resource "google_storage_bucket" "tf_state" {
+  name     = "${var.project_name}-tf_state"
   location = var.region
 }
 
@@ -132,122 +137,42 @@ resource "google_bigquery_table" "nft_transactions" {
 }
 
 #Upload file into bucket
-# resource "google_storage_bucket_object" "app_index" {  
-#   name   = "index.html"
-#   bucket = google_storage_bucket.app_bucket.name
-#   source = "${path.root}/../public/index.html"
-#   //cache_control = "no-store"
-# }
-#Upload file into bucket
-/* resource "google_storage_bucket_object" "app_js" {  
-  name   = "main.js"
-  content_type ="application/javascript"
-  bucket = google_storage_bucket.app_bucket.name
-  source = "${path.root}/../public/main_red.js"
-  //cache_control = "no-store"
+module "epochs_png"{
+  source="./modules/cloudstorage_file"
+  filename="epochs.png"
+  filepath="${path.root}/../public/epochs.png"
+  content_type ="epochs.pn"
+  bucketname=google_storage_bucket.app_bucket.name
+  entities=["allUsers"]
+  cache_control="no-store"
 }
 
-resource "google_storage_bucket_object" "app_css" {  
-  name   = "main.css"
-  content_type ="text/css"
-  bucket = google_storage_bucket.app_bucket.name
-  source = "${path.root}/../public/main_red.css"
-  //cache_control = "no-store"
-} */
-
-resource "google_storage_bucket_object" "app_epochs_png" {  
-  name   = "epochs.png"
-  content_type ="image/png"
-  bucket = google_storage_bucket.app_bucket.name
-  source = "${path.root}/../public/epochs.png"
-  //cache_control = "no-store"
-}
-resource "google_storage_bucket_object" "epoch_info" {  
-  name   = "epoch.json"
+module "epoch_info"{
+  source="./modules/cloudstorage_file"
+  filename="epoch.json"
+  filepath="${path.root}/../public/epoch.json"
   content_type ="application/json"
-  bucket = google_storage_bucket.app_bucket.name
-  source = "${path.root}/../public/epoch.json"
-  cache_control = "no-store"
+  bucketname=google_storage_bucket.app_bucket.name
+  entities=["allUsers"]
+  cache_control="no-store"
 }
-resource "google_storage_bucket_object" "lead_vote" {  
-  name   = "lead_vote.json"
+module "lead_vote"{
+  source="./modules/cloudstorage_file"
+  filename="lead_vote.json"
+  filepath="${path.root}/../public/lead_vote.json"
   content_type ="application/json"
-  bucket = google_storage_bucket.app_bucket.name
-  source = "${path.root}/../public/lead_vote.json"
-  cache_control = "no-store"
+  bucketname=google_storage_bucket.app_bucket.name
+  entities=["allUsers"]
+  cache_control="no-store"
 }
-
-resource "google_storage_bucket_object" "nft_temp_img" {  
-  name   = "nft_temp.png"
+module "nft_temp_img"{
+  source="./modules/cloudstorage_file"
+  filename="nft_temp.png"
+  filepath="${path.root}/../public/nft_temp.png"
   content_type ="image/png"
-  bucket = google_storage_bucket.app_bucket.name
-  source = "${path.root}/../public/nft_temp.png"
-  cache_control = "no-store"
-}
-
-/*  resource "google_storage_object_access_control" "public_rule_js" {
-   bucket = google_storage_bucket.app_bucket.name
-   object = google_storage_bucket_object.app_js.output_name
-   role   = "READER"
-   entity = "allUsers"
-   depends_on = [
-    google_storage_bucket_object.app_js
-  ]
- } */
-
-# resource "google_storage_object_access_control" "public_rule_index" {
-#   bucket = google_storage_bucket.app_bucket.name
-#   object = google_storage_bucket_object.app_index.output_name
-#   role   = "READER"
-#   entity = "allUsers"
-# }
-/* resource "google_storage_object_access_control" "public_rule_css" {
-  bucket = google_storage_bucket.app_bucket.name
-  object = google_storage_bucket_object.app_css.output_name
-  role   = "READER"
-  entity = "allUsers"
-  depends_on = [
-    google_storage_bucket_object.app_css
-  ]
-} */
-resource "google_storage_object_access_control" "public_rule_epochs_png" {
-  bucket = google_storage_bucket.app_bucket.name
-  object = google_storage_bucket_object.app_epochs_png.output_name
-  role   = "READER"
-  entity = "allUsers"
-  depends_on = [
-    google_storage_bucket_object.app_epochs_png
-  ]
-}
-
-resource "google_storage_object_access_control" "epoch_info" {
-  bucket = google_storage_bucket.app_bucket.name
-  object = google_storage_bucket_object.epoch_info.output_name
-  role   = "READER"
-  entity = "allUsers"
-  depends_on = [
-    google_storage_bucket_object.epoch_info
-  ]
-}
-
-resource "google_storage_object_access_control" "ntf_img" {
-  bucket = google_storage_bucket.app_bucket.name
-  object = google_storage_bucket_object.nft_temp_img.output_name
-  role   = "READER"
-  entity = "allUsers"
-  depends_on = [
-    google_storage_bucket_object.nft_temp_img
-  ]
-}
-
-resource "google_storage_object_access_control" "lead_vote" {
-  bucket = google_storage_bucket.app_bucket.name
-  object = google_storage_bucket_object.lead_vote.output_name
-  role   = "READER"
-  entity = "allUsers"
-  depends_on = [
-    google_storage_bucket_object.lead_vote
-  ]
+  bucketname=google_storage_bucket.app_bucket.name
+  entities=["allUsers"]
+  cache_control="no-store"
 }
 
 data "archive_file" "handle_vote" {
@@ -312,7 +237,7 @@ resource "google_cloudfunctions_function" "check_transactions" {
   description = "check_transactions"
   runtime     = "python38"
 
-  available_memory_mb   = 128
+  available_memory_mb   = 256
   source_archive_bucket = google_storage_bucket.service_bucket.name
   source_archive_object = google_storage_bucket_object.check_transactions.name
   trigger_http          = true
@@ -342,7 +267,7 @@ resource "google_cloudfunctions_function_iam_member" "check_transactions" {
 resource "google_cloud_scheduler_job" "job_check_transactions" {
   name             = "trigger-check_transactions"
   description      = "Trigger the ${google_cloudfunctions_function.check_transactions.name} Cloud Function"
-  schedule         = "*/30 * * * *" # Every 3 hours "3 */3 * * *"
+  schedule         = "*/5 * * * *" # Every 3 hours "3 */3 * * *"
   time_zone        = "Europe/Dublin"
   attempt_deadline = "320s"
 

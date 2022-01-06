@@ -257,9 +257,7 @@ function check_image(e) {
                     tile_img_ob.style.width=String(tile_size+"px");
                     tile_img_ob.style.height=String(tile_size+"px");
                     tile_img_ob.style.left=String((epoch_px[0][0]+64)+"px");
-                    tile_img_ob.style.top=String((epoch_px[0][1]+150)+"px");
-
-                    
+                    tile_img_ob.style.top=String((epoch_px[0][1]+150)+"px"); 
                 }
                 img.setAttribute('crossOrigin', '');
                 img.src = e.target.result;
@@ -314,7 +312,7 @@ function countdown(countDownDate){
 }
 
 async function change_main_network(){
-    console.log("Change to ETH-network")
+    console.log("Change to Polygon-network")
     await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: '0x1' }], // chainId must be in hexadecimal numbers
@@ -381,8 +379,8 @@ async function init(){
     await fetch('./epoch.json',{
                 method: 'GET'
             }
-    ).then(res => res.text()).then(function(data) {
-        
+    ).then(res => res.text()).then(function(data) {    
+        console.log(data)    
         const data_obj = JSON.parse(data)
         console.log("current epoch: ",data_obj["epoch"])
         if("epoch_"+data_obj["epoch"] in data_obj){
@@ -410,15 +408,21 @@ async function init(){
             //current epoch has already ended
                 next_epoch=1+data_obj["epoch"]
                 delta_ms=Math.abs(data_obj["epoch_"+next_epoch]["time"]["start_epoch"] - new Date().getTime())
-                delta_h=Math.round(delta_ms/1000/60/60)
-                if (delta_h<=1){
-                    delta_m=Math.round(delta_ms/1000/60)
-                    document.getElementById("vote_creation").innerHTML = "Voting for next period will open in: ~"+delta_m+" minutes"
+                if(delta_ms>0){
+                    delta_h=Math.round(delta_ms/1000/60/60)
+                    if (delta_h<=1){
+                        delta_m=Math.round(delta_ms/1000/60)
+                        document.getElementById("vote_creation").innerHTML = "Voting for next period will open in: ~"+delta_m+" minutes"
+                    }
+                    else{
+                        document.getElementById("vote_creation").innerHTML = "Voting for next period will open in: ~"+delta_h+" hours"
+                    }
+                    document.getElementById("countdown").innerHTML = "EXPIRED";
                 }
                 else{
-                    document.getElementById("vote_creation").innerHTML = "Voting for next period will open in: ~"+delta_h+" hours"
+                    document.getElementById("countdown").innerHTML = "EXPIRED";
+                    document.getElementById("vote_creation").innerHTML ="Loaded Episode is out of date. Please refresh page. If error continues, give a hint to dev-team."
                 }
-                document.getElementById("countdown").innerHTML = "EXPIRED";
             }
             else{
                 countdown(end_epoch)
