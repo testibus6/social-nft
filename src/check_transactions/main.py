@@ -9,7 +9,7 @@ Created on Fri Jul 30 18:25:13 2021
 CHAIN="POLYGON"
 TARGET_ADDRESS="0x703091392E1BEa715d9F93DaB57DAfA8bB0f45bF".lower()
 EPOCH_COOLDOWN=1*60*1000
-T0=1631541640
+T0=1641558975
 
 import csv
 import time
@@ -185,10 +185,14 @@ def get_last_handled_block():
         data=block_info.split("\n")[-2].split(",")
         return int(data[1])
 
-    except:        
+    except Exception as e:
+        print("error in get_last_handled_block")
+        print(e)       
         return init_block
 
 def validate_transaction(transaction,start_time,end_time):
+    print(transaction,start_time,end_time)
+    print(transaction['to'].lower(),TARGET_ADDRESS)
     if int(transaction['timeStamp']) > start_time and int(transaction['timeStamp']) < end_time and transaction['to'].lower()==TARGET_ADDRESS:
         return True
     return False
@@ -200,11 +204,15 @@ def get_last_transactions(start_block,last_block):
         print(transactions)
         with open(BASE_PATH+epoch_filename,"r") as f: 
             epoch_info=json.loads(f.read())    
-        epoch_name=str("epoch_"+epoch_info["epoch"])
+        epoch_name=str("epoch_"+str(epoch_info["epoch"]))
         start_epoch_time = epoch_info[epoch_name]["time"]["start_epoch"]/1000
         end_epoch_time = epoch_info[epoch_name]["time"]["end_epoch"]/1000+60
-        transactions[:] = [x for x in transactions if validate_transaction(x,start_epoch_time,end_epoch_time)]        
-    except:
+        print(start_epoch_time,end_epoch_time)
+        transactions[:] = [x for x in transactions if validate_transaction(x,start_epoch_time,end_epoch_time)]   
+        print("final transactions",transactions)     
+    except Exception as e:
+        print("error in getting transactions")
+        print(e)
         transactions=list()
     return transactions
 

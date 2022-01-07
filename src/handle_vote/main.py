@@ -77,9 +77,9 @@ def check_duplicate_address_in_bigquery(address):
     table = bigquery_client.get_table(table_ref)
     query_str="""
             SELECT 'address'
-            FROM `create-nft.{epoch_dataset}.nft_votes`
+            FROM `{project_id}.{epoch_dataset}.nft_votes`
             WHERE address='{address}'
-            LIMIT 1 """.format(epoch_dataset=epoch_dataset,address=address)
+            LIMIT 1 """.format(project_id=project_id,epoch_dataset=epoch_dataset,address=address)
     print(query_str)
     query_job = bigquery_client.query(query_str)
     results = query_job.result() # Wait for the job to complete.
@@ -96,9 +96,9 @@ def export_items_to_bigquery(address,amount,px_values):
     table = bigquery_client.get_table(table_ref)
     timestamp=int(time.time()*1000)
     query_str="""
-            INSERT `create-nft.{epoch_dataset}.nft_votes` (address,amount,px,verified,time)
+            INSERT `{project_id}.{epoch_dataset}.nft_votes` (address,amount,px,verified,time)
             VALUES('{address}', {amount},{px},FALSE,{time})
-            """.format(epoch_dataset=epoch_dataset,address=address,amount=amount,px=px_values,time=timestamp)
+            """.format(project_id=project_id,epoch_dataset=epoch_dataset,address=address,amount=amount,px=px_values,time=timestamp)
     print(query_str)
     query_job = bigquery_client.query(query_str)
     results = query_job.result() # Wait for the job to complete.
@@ -157,7 +157,8 @@ def handle_vote(request):
                 return ('Voting for this epoch is closed. Retry later', 400, headers)
         else:
             return ('Missing or invalid input data.', 400, headers)
-    except:
+    except Exception as e:
+        print(e)
         return ('not-okay', 403, headers)
 
         

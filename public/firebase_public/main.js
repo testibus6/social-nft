@@ -100,7 +100,7 @@ async function submitVote() {
         if(data["amount"] >0){    
             headers = {'Content-Type': 'application/json'};
             
-            await fetch('https://us-central1-create-nft.cloudfunctions.net/handle_vote',{
+            await fetch('https://us-central1-social-nft-backend.cloudfunctions.net/handle_vote',{
                         method: 'POST',
                         headers: headers,
                         body: JSON.stringify(data),
