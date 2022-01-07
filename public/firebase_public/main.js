@@ -315,7 +315,7 @@ async function change_main_network(){
     console.log("Change to Polygon-network")
     await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: '0x1' }], // chainId must be in hexadecimal numbers
+        params: [{ chainId: '0x89' }], // chainId must be in hexadecimal numbers # 0x89 for polygon; 
       }); 
 }
 
@@ -325,9 +325,9 @@ function on_participate(){
         web3_to_init=false
         if ((typeof window.ethereum !== 'undefined') || (typeof window.web3 !== 'undefined')){
             web3 = new Web3(web3.currentProvider);
-            web3.eth.net.getNetworkType().then(function(network){
-                console.log(network)
-                if(network!="main"){
+            web3.eth.getChainId().then(function(network){
+                console.log("network-id",network)
+                if(network!=137){
                     change_main_network();
                 }
             }); 
@@ -379,8 +379,7 @@ async function init(){
     await fetch('./epoch.json',{
                 method: 'GET'
             }
-    ).then(res => res.text()).then(function(data) {    
-        console.log(data)    
+    ).then(res => res.text()).then(function(data) {       
         const data_obj = JSON.parse(data)
         console.log("current epoch: ",data_obj["epoch"])
         if("epoch_"+data_obj["epoch"] in data_obj){

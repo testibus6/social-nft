@@ -12,7 +12,7 @@ def create_nft_template(img_size=128):
     img.save("../public/nft_temp_draft.png", "PNG")
 
 import json
-start_time= 1641470400*1000
+start_time= 1641474000*1000
 short_duration = 1*3600*1000
 long_duration  = 2*3600*1000
 between_duration = 10*60*1000

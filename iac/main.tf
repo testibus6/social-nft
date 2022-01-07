@@ -136,12 +136,22 @@ resource "google_bigquery_table" "nft_transactions" {
     EOF
 }
 
-#Upload file into bucket
+#Upload file into buckets
+module "handled_blocks"{
+  source="./modules/cloudstorage_file"
+  filename="handled_blocks.csv"
+  filepath="${path.root}/../public/handled_blocks.csv"
+  content_type ="text/csv"
+  bucketname=google_storage_bucket.service_bucket.name
+  entities=[]
+  cache_control="no-store"
+}
+
 module "epochs_png"{
   source="./modules/cloudstorage_file"
   filename="epochs.png"
   filepath="${path.root}/../public/epochs.png"
-  content_type ="epochs.pn"
+  content_type ="image/png"
   bucketname=google_storage_bucket.app_bucket.name
   entities=["allUsers"]
   cache_control="no-store"
